@@ -74,8 +74,31 @@ plot this
 
 # Problem 3 
 
+Load the Homicide Dataset
 ```{r}
-homicide_data= read_csv("data/homicide-data.csv", na = c("NA", ".", ""))
+homicide_raw= read_csv("data/homicide-data.csv", na = c("NA", ".", ""))
 ```
+Description of Data: 
+
+
+```{r}
+
+unsolved_levels= c("Closed without arrest", "Closed by arrest")
+
+city_summary=
+  homicide_raw |>
+  mutate(
+    city_state = paste(city, state, sep = ","), 
+    unsolved = disposition %in% unsolved_levels) |> 
+  group_by(city_state) |>
+  summarize(
+    total    = n(),
+    unsolved = sum(unsolved),
+    .groups = "drop"
+  )
+ 
+   
+```
+
 
 
