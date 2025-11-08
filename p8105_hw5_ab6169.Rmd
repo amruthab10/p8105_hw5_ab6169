@@ -17,4 +17,65 @@ library(broom)
 ```
 
 
+# Problem 1 
+
+```{r}
+birthdays = sample(1:365, 50, replace = TRUE)
+
+repeated_bday= length(unique(birthdays)) < 50
+
+repeated_bday
+
+unique(c(1,2,3,4,5,1,1,3))
+```
+
+In a function
+```{r}
+bday_sim= function(n_room) {
+  birthdays= sample(1:365, n_room, replace = TRUE)
+
+  repeated_bday= length(unique(birthdays)) < n_room
+
+  repeated_bday
+}
+
+bday_sim(20)
+```
+
+```{r}
+bday_sim_results= 
+  expand_grid(
+    bdays= 2:50, 
+    iter= 1:10000
+  ) |>  
+  mutate(
+    result= map_lgl(bdays, bday_sim)
+  ) |> 
+  group_by(
+    bdays
+  ) |>  
+  summarize(
+    prob_repeat= mean(result)
+  )
+```
+
+plot this
+
+```{r}
+ bday_sim_results |>  
+  ggplot(aes(x=bdays, y=prob_repeat))+ 
+  geom_point() + 
+  geom_line()
+```
+
+
+# Problem 2 
+
+
+# Problem 3 
+
+```{r}
+homicide_data= read_csv("data/homicide-data.csv", na = c("NA", ".", ""))
+```
+
 
