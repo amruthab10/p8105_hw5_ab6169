@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(p8105.datasets)
 library(tidyverse)
 library(broom)
+library(dplyr)
+
 ```
 
 
@@ -85,20 +87,49 @@ Description of Data:
 
 unsolved_levels= c("Closed without arrest", "Closed by arrest")
 
-city_summary=
+homicide_data= 
   homicide_raw |>
   mutate(
-    city_state = paste(city, state, sep = ","), 
-    unsolved = disposition %in% unsolved_levels) |> 
+    city_state = paste(city, state, sep = ","),
+    unsolved   = disposition %in% unsolved_levels) |>
   group_by(city_state) |>
-  summarize(
-    total    = n(),
-    unsolved = sum(unsolved),
-    .groups = "drop"
-  )
+  mutate(
+    total= n(),
+    unsolved_total = sum(unsolved)) |>
+  ungroup() |>
+  select(-city, -state, -disposition)
+
  
    
 ```
 
+Baltimore, MD
+
+```{r}
+
+baltimore_df <- 
+  homicide_data |> 
+  filter(city_state %in% c("Baltimore, MD", "Baltimore,MD"))
+
+
+baltimore_counts <- 
+  baltimore_df |> 
+  summarize(
+    total = n(),
+    unsolved = sum(unsolved, na.rm = TRUE)
+  )
+baltimore_counts
+
+baltimore_test <- 
+  prop.test(baltimore_counts$unsolved, baltimore_counts$total)
+baltimore_test
+
+baltimore_tidy <- 
+  broom::tidy(baltimore_test) |> 
+  select(estimate, conf.low, conf.high)
+
+baltimore_tidy
+
+```
 
 
