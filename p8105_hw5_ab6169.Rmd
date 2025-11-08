@@ -1,0 +1,20 @@
+---
+title: "p8105_hw5_ab6169"
+author: "Amrutha Banda"
+date: "2025-11-08"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(p8105.datasets)
+library(tidyverse)
+library(broom)
+```
+
+
+
