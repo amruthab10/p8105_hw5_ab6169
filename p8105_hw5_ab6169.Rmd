@@ -15,6 +15,9 @@ library(p8105.datasets)
 library(tidyverse)
 library(broom)
 library(dplyr)
+library(purrr)
+
+set.seed(1)
 
 ```
 
@@ -73,12 +76,29 @@ plot this
 
 # Problem 2 
 
+```{r}
+
+sim_one <- function(mu, n = 30, sigma = 5) {
+  x_vec= rnorm(n, mean = mu, sd = sigma)
+  tt= t.test(x, mu = 0)                       
+  tibble(
+    mu_hat  = mean(x),
+    p_value = tidy(tt)$p.value,
+    reject  = p_value < 0.05)
+
+}
+```
+2. Repeat the above for 𝜇={1,2,3,4,5,6}
+3. Make a plot. Describe the association between effect size and power.
+4. Make another plot 
+
 
 # Problem 3 
 
 Load the Homicide Dataset
 ```{r}
-homicide_raw= read_csv("data/homicide-data.csv", na = c("NA", ".", ""))
+homicide_raw= read_csv("data/homicide-data.csv", na = c("NA", ".", "")) |> 
+janitor::clean_names()
 ```
 Description of Data: 
 
@@ -130,6 +150,40 @@ baltimore_tidy <-
 
 baltimore_tidy
 
+```
+
+Plot 
+
+```{r}
+city_counts <- homicide_data |>
+  group_by(city_state) |>
+  summarize(
+    total    = n(),
+    unsolved = sum(unsolved, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+city_results <- city_counts |>
+  mutate(
+    test_obj = map2(unsolved, total, ~ prop.test(.x, .y)),
+    tidy_out = map(test_obj, broom::tidy)
+  ) |>
+  unnest(tidy_out) |>
+  select(city_state, total, unsolved, estimate, conf.low, conf.high)
+```
+
+```{r}
+city_results |>
+  mutate(city_state = forcats::fct_reorder(city_state, estimate)) |>
+  ggplot(aes(x = city_state, y = estimate)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.2) +
+  coord_flip() +
+  labs(
+    title = "Estimated proportion of unsolved homicides by city (95% CI)",
+    x = NULL,
+    y = "Proportion unsolved") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))
 ```
 
 
