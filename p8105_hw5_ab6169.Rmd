@@ -17,8 +17,6 @@ library(broom)
 library(dplyr)
 library(purrr)
 
-set.seed(1)
-
 ```
 
 
@@ -64,30 +62,46 @@ bday_sim_results=
   )
 ```
 
-plot this
 
+Plot Showing the Probability as a function of group size 
 ```{r}
- bday_sim_results |>  
-  ggplot(aes(x=bdays, y=prob_repeat))+ 
+bday_sim_results |>
+  ggplot(aes(x = bdays, y = prob_repeat)) + 
   geom_point() + 
-  geom_line()
+  geom_line() +
+  labs(
+    x = "Group size (n)",
+    y = "Probability of at least one shared birthday",
+    title = "Birthday paradox via simulation (10,000 runs per n)"
+  )
 ```
+Comments: This plot shows us how probability of at least two people sharing a birthday increases as the group size grows. When there are fewer than 10 people in the room, the probability is close to zero. This means that having a shared birthday is very unlikely. Meanwhile, as the group size approaches around 20-25 people, the probability rises and reaches to about 50%. I also observed that the curve begins to flatten after about 35 people. 
+
 
 
 # Problem 2 
 
 ```{r}
-
-sim_one <- function(mu, n = 30, sigma = 5) {
-  x_vec= rnorm(n, mean = mu, sd = sigma)
-  tt= t.test(x, mu = 0)                       
-  tibble(
-    mu_hat  = mean(x),
-    p_value = tidy(tt)$p.value,
-    reject  = p_value < 0.05)
-
-}
+set.seed(1)
 ```
+
+#Running 5000 simulations 
+```{r}
+
+
+```
+
+
+Power of the test 
+```{r}
+
+```
+
+Power Plot 
+```{r}
+
+```
+
 2. Repeat the above for 𝜇={1,2,3,4,5,6}
 3. Make a plot. Describe the association between effect size and power.
 4. Make another plot 
@@ -172,7 +186,7 @@ city_results <- city_counts |>
   select(city_state, total, unsolved, estimate, conf.low, conf.high)
 ```
 
-```{r}
+```{r fig.height=100, fig.width=100}
 city_results |>
   mutate(city_state = forcats::fct_reorder(city_state, estimate)) |>
   ggplot(aes(x = city_state, y = estimate)) +
