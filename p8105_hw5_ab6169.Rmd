@@ -75,7 +75,9 @@ bday_sim_results |>
     title = "Birthday paradox via simulation (10,000 runs per n)"
   )
 ```
-Comments: This plot shows us how probability of at least two people sharing a birthday increases as the group size grows. When there are fewer than 10 people in the room, the probability is close to zero. This means that having a shared birthday is very unlikely. Meanwhile, as the group size approaches around 20-25 people, the probability increases and reaches to about 50%. I also observed that the curve begins to flatten after about 35 people. 
+Comments: 
+
+This plot shows us how probability of at least two people sharing a birthday increases as the group size grows. When there are fewer than 10 people in the room, the probability is close to zero. This means that having a shared birthday is very unlikely. Meanwhile, as the group size approaches around 20-25 people, the probability increases and reaches to about 50%. I also observed that the curve begins to flatten after about 35 people. 
 
 
 
@@ -137,7 +139,9 @@ power_df |>
     y = "Power (Pr reject H0)"
   )
 ```
-Description: I observed that as the effect size (true mean) increases, the power of the test also increases. I see that when the true mean is is close to 0, the power is low. As the effect size gets larger, there is higher statistical power. This basically means that the probability of rejecting the null rises sharply. 
+Description:
+
+I observed that as the effect size (true mean) increases, the power of the test also increases. I see that when the true mean is is close to 0, the power is low. As the effect size gets larger, there is higher statistical power. This basically means that the probability of rejecting the null rises sharply. 
 
 
 Average Estimate 
@@ -182,7 +186,9 @@ estimate_df |>
 ```
 
 
-Comments: The sample average of μ̂ across tests for which the null is rejected is not approximately equal to the true value of μ. I observed that when we only include samples where the null hypothesis was rejected (p < 0.05), the estimated means tend to be larger than the true mean. This is happening because we’re only keeping samples show stronger effects than average.
+Comments:
+
+The sample average of μ̂ across tests for which the null is rejected is not approximately equal to the true value of μ. I observed that when we only include samples where the null hypothesis was rejected (p < 0.05), the estimated means tend to be larger than the true mean. This is happening because we’re only keeping samples show stronger effects than average.
 
 
 # Problem 3 
@@ -192,7 +198,9 @@ Load the Homicide Dataset
 homicide_raw= read_csv("data/homicide-data.csv", na = c("NA", ".", "")) |> 
 janitor::clean_names()
 ```
-Description of Data: The contains information on homicide cases collected by The Washington Post from 50 major U.S. cities. It includes a total of `r nrow(homicide_raw)` observations and `r ncol(homicide_raw)` variables. Each row represents a single homicide incident and provides details such as the victim’s name, age, race, and sex, the date the case was reported, the city and state where it occurred, and the case disposition status. After cleaning the variable names using the `janitor::clean_names()` function, a new variable called `city_state` was created by combining the `city` and `state` columns 
+Description of Data: 
+
+The contains information on homicide cases collected by The Washington Post from 50 major U.S. cities. It includes a total of `r nrow(homicide_raw)` observations and `r ncol(homicide_raw)` variables. Each row represents a single homicide incident and provides details such as the victim’s name, age, race, and sex, the date the case was reported, the city and state where it occurred, and the case disposition status. After cleaning the variable names using the `janitor::clean_names()` function, a new variable called `city_state` was created by combining the `city` and `state` columns 
 
 
 ```{r}
@@ -262,6 +270,7 @@ city_results <- city_counts |>
   unnest(tidy_out) |>
   select(city_state, total, unsolved, estimate, conf.low, conf.high)
 ```
+
 
 Plot: Estimates and CIs for each city 
 ```{r }
