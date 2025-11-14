@@ -75,7 +75,7 @@ bday_sim_results |>
     title = "Birthday paradox via simulation (10,000 runs per n)"
   )
 ```
-Comments: This plot shows us how probability of at least two people sharing a birthday increases as the group size grows. When there are fewer than 10 people in the room, the probability is close to zero. This means that having a shared birthday is very unlikely. Meanwhile, as the group size approaches around 20-25 people, the probability rises and reaches to about 50%. I also observed that the curve begins to flatten after about 35 people. 
+Comments: This plot shows us how probability of at least two people sharing a birthday increases as the group size grows. When there are fewer than 10 people in the room, the probability is close to zero. This means that having a shared birthday is very unlikely. Meanwhile, as the group size approaches around 20-25 people, the probability increases and reaches to about 50%. I also observed that the curve begins to flatten after about 35 people. 
 
 
 
@@ -137,7 +137,7 @@ power_df |>
     y = "Power (Pr reject H0)"
   )
 ```
-Description: I observed that the association between effect size and power.
+Description: I observed that as the effect size (true mean) increases, the power of the test also increases. I see that when the true mean is is close to 0, the power is low. As the effect size gets larger, there is higher statistical power. This basically means that the probability of rejecting the null rises sharply. 
 
 
 Average Estimate 
@@ -146,7 +146,7 @@ estimate_df =
   sims_df |>
   group_by(mu_true) |>
   summarize(
-    mean_mu_hat_all    = mean(mu_hat),
+    mean_mu_hat_all = mean(mu_hat),
     mean_mu_hat_reject = mean(mu_hat[reject]),
     .groups = "drop"
   )
@@ -154,12 +154,12 @@ estimate_df =
 estimate_df
 ```
 
-Plot of Average Estimate
+Individual Plot of Average Estimate
 ```{r}
 estimate_df |>
   ggplot(aes(x = mu_true, y = mean_mu_hat_all)) +
-  geom_point(color = "coral") +
-  geom_line(color = "coral") +
+  geom_point(color = "blue") +
+  geom_line(color = "blue") +
   labs(
     title = "Average Estimate of μ̂ vs True μ",
     x = "True Mean",
@@ -167,21 +167,8 @@ estimate_df |>
   )
 ```
 
-Plot: average estimate
-```{r}
-estimate_df |>
-  ggplot(aes(x = mu_true, y = mean_mu_hat_all)) +
-  geom_line(color = "blue") +
-  geom_point(color = "blue") +
-  labs(
-    title = "Average Estimate of μ̂ vs True Mean (μ)",
-    x = "True Mean (μ)",
-    y = "Average Estimate of μ̂"
-  )
-```
 
-
-Plot: Null Rejected
+Individual Plot: Null Rejected
 ```{r}
 estimate_df |>
   ggplot(aes(x = mu_true, y = mean_mu_hat_reject)) +
@@ -193,6 +180,8 @@ estimate_df |>
     y = "Average Estimate of μ̂"
   )
 ```
+
+
 Comments: The sample average of μ̂ across tests for which the null is rejected is not approximately equal to the true value of μ. I observed that when we only include samples where the null hypothesis was rejected (p < 0.05), the estimated means tend to be larger than the true mean. This is happening because we’re only keeping samples show stronger effects than average.
 
 
@@ -203,7 +192,7 @@ Load the Homicide Dataset
 homicide_raw= read_csv("data/homicide-data.csv", na = c("NA", ".", "")) |> 
 janitor::clean_names()
 ```
-Description of Data: 
+Description of Data: The contains information on homicide cases collected by The Washington Post from 50 major U.S. cities. It includes a total of `r nrow(homicide_raw)` observations and `r ncol(homicide_raw)` variables. Each row represents a single homicide incident and provides details such as the victim’s name, age, race, and sex, the date the case was reported, the city and state where it occurred, and the case disposition status. After cleaning the variable names using the `janitor::clean_names()` function, a new variable called `city_state` was created by combining the `city` and `state` columns 
 
 
 ```{r}
@@ -256,7 +245,6 @@ baltimore_tidy
 ```
 
 Plot 
-
 ```{r}
 city_counts <- homicide_data |>
   group_by(city_state) |>
@@ -275,6 +263,7 @@ city_results <- city_counts |>
   select(city_state, total, unsolved, estimate, conf.low, conf.high)
 ```
 
+Plot: Estimates and CIs for each city 
 ```{r }
 city_results |>
   mutate(city_state = forcats::fct_reorder(city_state, estimate)) |>
