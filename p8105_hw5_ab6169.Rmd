@@ -88,36 +88,112 @@ set.seed(1)
 Simulating One Sample test
 ```{r}
 sim_ttest = function(mu, n = 30, sigma = 5) {
-
-  x = rnorm(n, mean = mu, sd = sigma)
-
-  tt = t.test(x, mu = 0) #running the t-test
   
+  x  = rnorm(n, mean = mu, sd = sigma)
+  tt = t.test(x, mu = 0)
   tibble(
-    mu_true = mu,
     mu_hat  = mean(x),
     p_value = tt$p.value,
     reject  = tt$p.value < 0.05
   )
 }
 
+```
 
+5000 simulations 
+```{r}
+sims_df = 
+  expand_grid(
+    mu_true = 0:6,
+    iter = 1:5000
+  ) |>
+  mutate(
+    res = map(mu_true, ~ sim_ttest(mu = .x))
+  ) |>
+  unnest(res)
 ```
 
 
 Power of the test 
 ```{r}
-
+power_df =
+  sims_df |>
+  group_by(mu_true) |>
+  summarize(
+    power = mean(reject),
+    .groups = "drop"
+  )
 ```
 
 Power Plot 
 ```{r}
+power_df |>
+  ggplot(aes(x = mu_true, y = power)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Power vs Effect Size (one-sample t-test; n=30, σ=5, α=0.05)",
+    x = "True Mean (μ)",
+    y = "Power (Pr reject H0)"
+  )
+```
+Description: I observed that the association between effect size and power.
 
+
+Average Estimate 
+```{r}
+estimate_df =
+  sims_df |>
+  group_by(mu_true) |>
+  summarize(
+    mean_mu_hat_all    = mean(mu_hat),
+    mean_mu_hat_reject = mean(mu_hat[reject]),
+    .groups = "drop"
+  )
+
+estimate_df
 ```
 
-2. Repeat the above for 𝜇={1,2,3,4,5,6}
-3. Make a plot. Describe the association between effect size and power.
-4. Make another plot 
+Plot of Average Estimate
+```{r}
+estimate_df |>
+  ggplot(aes(x = mu_true, y = mean_mu_hat_all)) +
+  geom_point(color = "coral") +
+  geom_line(color = "coral") +
+  labs(
+    title = "Average Estimate of μ̂ vs True μ",
+    x = "True Mean",
+    y = "Average Estimate of μ̂"
+  )
+```
+
+Plot: average estimate
+```{r}
+estimate_df |>
+  ggplot(aes(x = mu_true, y = mean_mu_hat_all)) +
+  geom_line(color = "blue") +
+  geom_point(color = "blue") +
+  labs(
+    title = "Average Estimate of μ̂ vs True Mean (μ)",
+    x = "True Mean (μ)",
+    y = "Average Estimate of μ̂"
+  )
+```
+
+
+Plot: Null Rejected
+```{r}
+estimate_df |>
+  ggplot(aes(x = mu_true, y = mean_mu_hat_reject)) +
+  geom_point(color = "red") +
+  geom_line(color = "red") +
+  labs(
+    title = "Average μ̂ (only when p < 0.05)",
+    x = "True Mean (μ)",
+    y = "Average Estimate of μ̂"
+  )
+```
+Comments: The sample average of μ̂ across tests for which the null is rejected is not approximately equal to the true value of μ. I observed that when we only include samples where the null hypothesis was rejected (p < 0.05), the estimated means tend to be larger than the true mean. This is happening because we’re only keeping samples show stronger effects than average.
 
 
 # Problem 3 
