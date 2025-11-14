@@ -273,7 +273,7 @@ city_results <- city_counts |>
 
 
 Plot: Estimates and CIs for each city 
-```{r }
+```{r fig.height=10, fig.width=6}
 city_results |>
   mutate(city_state = forcats::fct_reorder(city_state, estimate)) |>
   ggplot(aes(x = city_state, y = estimate)) +
